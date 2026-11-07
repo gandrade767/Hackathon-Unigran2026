@@ -8,9 +8,7 @@ Gestão de manutenção urbana: os pedidos dos moradores (iluminação, paviment
 
 ## Objetivo
 
-Ajudar a prefeitura a:
-
-- registrar e acompanhar as solicitações dos moradores, com prioridade, situação e custo;
+- Acompanhar as solicitações dos moradores, com prioridade, situação e custo;
 - ver quais regiões têm mais problemas em aberto;
 - acompanhar o orçamento disponível, o valor gasto e o andamento das manutenções em uma página de análises.
 
