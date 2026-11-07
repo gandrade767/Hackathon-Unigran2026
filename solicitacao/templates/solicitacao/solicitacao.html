@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Solicitações{% endblock %}
+{% block heading %}Solicitações{% endblock %}
+{% block subheading %}Pedidos dos moradores com prioridade, situação e custo de cada atendimento.{% endblock %}
+
+{% block actions %}
+{% if page_obj %}<span class="badge rounded-pill text-bg-light border fs-6 fw-medium px-3 py-2">{{ page_obj.paginator.count }} no total</span>{% endif %}
+{% endblock %}
+
+{% block content %}
+<section class="card border-0 shadow-sm rounded-4 p-4">
+    <div class="table-responsive">
+        <table class="table table-borderless table-hover align-middle mb-0">
+            <thead>
+                <tr class="table-light">
+                    <th class="rounded-start">Protocolo</th>
+                    <th>Tipo</th>
+                    <th>Local</th>
+                    <th>Prioridade</th>
+                    <th>Abertura</th>
+                    <th>Gasto</th>
+                    <th class="rounded-end">Situação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in Solicitacoes %}
+                <tr>
+                    <td class="fw-semibold text-nowrap">MX-{{ s.data_solicitacao|date:"Y" }}-{{ s.pk|stringformat:"04d" }}</td>
+                    <td>{{ s.get_tipo_solicitacao_display|lower|capfirst }}</td>
+                    <td>
+                        <div class="fw-medium">{{ s.rua }}</div>
+                        <small class="text-muted">{{ s.area.nome|title }}</small>
+                    </td>
+                    <td>
+                        <span class="badge rounded-pill {% if s.nivel_prioridade >= 4 %}text-bg-danger{% elif s.nivel_prioridade == 3 %}text-bg-warning{% elif s.nivel_prioridade == 2 %}text-bg-info{% else %}text-bg-secondary{% endif %}">Nível {{ s.nivel_prioridade }}</span>
+                    </td>
+                    <td class="text-nowrap">{{ s.data_solicitacao|date:"d/m/Y" }}</td>
+                    <td class="text-nowrap">R$ {{ s.gasto|floatformat:"2g" }}</td>
+                    <td>{% include "partials/status_badge.html" %}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-5"><i class="bi bi-inbox fs-3 d-block mb-2"></i>Nenhuma solicitação registrada.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if is_paginated %}
+    <nav class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3" aria-label="Paginação">
+        <small class="text-muted">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</small>
+        <ul class="pagination pagination-sm mb-0">
+            <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                <a class="page-link" href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% else %}#{% endif %}" aria-label="Anterior"><i class="bi bi-chevron-left"></i></a>
+            </li>
+            {% for n in page_obj.paginator.page_range %}
+            <li class="page-item {% if n == page_obj.number %}active{% endif %}"><a class="page-link" href="?page={{ n }}">{{ n }}</a></li>
+            {% endfor %}
+            <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                <a class="page-link" href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% else %}#{% endif %}" aria-label="Próxima"><i class="bi bi-chevron-right"></i></a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block heading %}Avise, acompanhe e entenda o que a prefeitura está fazendo{% endblock %}
+{% block subheading %}Em Nova Esperança, o Munix reúne os pedidos dos moradores, organiza por gravidade e mostra o andamento de cada um.{% endblock %}
+
+{% block actions %}
+{% url 'analise' as url_analise %}
+{% if url_analise %}<a href="{{ url_analise }}" class="btn btn-light"><i class="bi bi-bar-chart me-2"></i>Ver análises</a>{% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Problemas em acompanhamento -->
+<section class="mb-4" aria-labelledby="titulo-situacoes">
+    <h2 id="titulo-situacoes" class="fs-5 fw-semibold mb-1">Problemas em acompanhamento</h2>
+    <p class="text-muted small mb-3">Regiões com mais pedidos ainda em aberto.</p>
+
+    <div class="row g-3 g-xl-4">
+        {% for r in regioes %}
+        <div class="col-md-6 col-xl-3">
+            <article class="card border-0 shadow-sm p-4 h-100">
+                <div class="{% if r.abertos %}bg-warning-subtle text-warning-emphasis{% else %}bg-success-subtle text-success-emphasis{% endif %} rounded-3 p-2 fs-4 lh-1 align-self-center mb-3"><i class="bi bi-geo-alt"></i></div>
+                <h3 class="fs-6 fw-semibold mb-1">{{ r.nome|title }}</h3>
+                <div class="text-muted small mb-2"><i class="bi bi-buildings me-1"></i>{{ r.cidade.nome }} – {{ r.cidade.estado|upper }}</div>
+                <p class="small mb-3">{{ r.get_tipo_area_display }}</p>
+                <div class="small fw-medium mt-auto">{{ r.abertos }} pedido{{ r.abertos|pluralize }} aberto{{ r.abertos|pluralize }}</div>
+            </article>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card border-0 shadow-sm p-5 text-center text-muted">Nenhuma região cadastrada.</div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<div class="row g-3 g-xl-4">
+    <!-- Pedidos recentes -->
+    <div class="col-lg-7">
+        <section class="card border-0 shadow-sm p-4 h-100" aria-labelledby="titulo-recentes">
+            <h2 id="titulo-recentes" class="fs-5 fw-semibold mb-2">Pedidos recentes</h2>
+            <div class="table-responsive">
+                <table class="table table-borderless mb-0 align-middle">
+                    <thead>
+                        <tr class="table-light">
+                            <th class="rounded-start">Assunto</th>
+                            <th>Bairro</th>
+                            <th>Data</th>
+                            <th class="rounded-end">Situação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in recentes %}
+                        <tr>
+                            <td><div class="fw-semibold">{{ s.get_tipo_solicitacao_display|lower|capfirst }} – {{ s.rua }}</div><small class="text-muted">MX-{{ s.data_solicitacao|date:"Y" }}-{{ s.pk|stringformat:"04d" }}</small></td>
+                            <td>{{ s.area.nome|title }}</td>
+                            <td>{{ s.data_solicitacao|date:"d/m" }}</td>
+                            <td>{% include "partials/status_badge.html" %}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center text-muted py-4">Nenhum pedido registrado.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- Prioridade -->
+    <div class="col-lg-5">
+        <section class="card border-0 shadow-sm p-4 h-100" aria-labelledby="titulo-prioridade">
+            <h2 id="titulo-prioridade" class="fs-5 fw-semibold mb-1">Como a prioridade é definida</h2>
+            <p class="text-muted small mb-4">Muitas reclamações não significam, sozinhas, maior gravidade.</p>
+            <ul class="list-unstyled d-grid gap-3 mb-0">
+                <li class="d-flex gap-3"><i class="bi bi-exclamation-triangle fs-5 text-muted"></i>
+                    <div class="lh-sm"><div class="fw-medium">Risco à segurança</div><small class="text-muted">Problemas que podem causar acidentes ou danos passam na frente.</small></div></li>
+                <li class="d-flex gap-3"><i class="bi bi-people fs-5 text-muted"></i>
+                    <div class="lh-sm"><div class="fw-medium">Pessoas afetadas</div><small class="text-muted">Considera quantos moradores são impactados no local.</small></div></li>
+                <li class="d-flex gap-3"><i class="bi bi-hospital fs-5 text-muted"></i>
+                    <div class="lh-sm"><div class="fw-medium">Serviços essenciais</div><small class="text-muted">Escolas, postos de saúde e vias de socorro têm prioridade.</small></div></li>
+                <li class="d-flex gap-3"><i class="bi bi-clock-history fs-5 text-muted"></i>
+                    <div class="lh-sm"><div class="fw-medium">Tempo de espera</div><small class="text-muted">Pedidos antigos sobem na fila para não ficarem esquecidos.</small></div></li>
+            </ul>
+        </section>
+    </div>
+</div>
+{% endblock %}

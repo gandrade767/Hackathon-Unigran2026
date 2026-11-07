@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Cidades{% endblock %}
+{% block heading %}Cidades{% endblock %}
+{% block subheading %}Municípios atendidos e o orçamento disponível para manutenção.{% endblock %}
+
+{% block content %}
+<div class="row g-3 g-xl-4">
+    {% for c in cidade %}
+    <div class="col-md-6 col-xl-4">
+        <article class="card border-0 shadow-sm rounded-4 p-4 h-100">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="bg-primary-subtle text-primary-emphasis rounded-3 p-2 fs-4 lh-1"><i class="bi bi-buildings"></i></div>
+                <div class="lh-sm">
+                    <h2 class="fs-6 fw-semibold mb-0">{{ c.nome }}</h2>
+                    <small class="text-muted">{{ c.estado|upper }}</small>
+                </div>
+            </div>
+            <div class="text-muted small fw-medium">Orçamento</div>
+            <div class="fs-3 fw-bold">R$ {{ c.orcamento|floatformat:"2g" }}</div>
+            {% with total=c.Cidade.count %}
+            <small class="text-muted mt-2"><i class="bi bi-geo-alt me-1"></i>{{ total }} regi{{ total|pluralize:"ão,ões" }} cadastrada{{ total|pluralize }}</small>
+            {% endwith %}
+        </article>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center text-muted"><i class="bi bi-buildings fs-3 mb-2"></i>Nenhuma cidade cadastrada.</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
